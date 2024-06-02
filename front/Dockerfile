@@ -1,14 +1,19 @@
-FROM node:latest as build
+# Étape de construction
+FROM node:14 AS build
 
-WORKDIR /usr/local/app
-COPY ./ /usr/local/app/
+WORKDIR /app
 
-RUN yarn
-RUN npm run build
- 
-FROM nginx:latest as production
+COPY package*.json ./
+RUN npm install
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /usr/local/app/dist/bobapp /usr/share/nginx/html
+COPY . .
+RUN npm run build --prod
+
+# Étape de production
+FROM nginx:alpine
+
+COPY --from=build /app/dist/bobapp /usr/share/nginx/html
 
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
