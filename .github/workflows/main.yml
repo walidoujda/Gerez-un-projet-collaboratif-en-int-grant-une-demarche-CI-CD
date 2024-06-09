@@ -1,0 +1,66 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 20
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '20'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install backend dependencies
+      run: cd back && mvn install
+
+    - name: Run backend tests and generate coverage report
+      run: cd back && mvn test jacoco:report
+
+    - name: Upload JaCoCo coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: jacoco-report
+        path: back\target\site\jacoco
+
+    - name: Install frontend dependencies
+      run: cd front && npm install
+
+    - name: Run frontend tests
+      run: cd front && npm test
+
+    - name: Build frontend
+      run: cd front && npm run build --prod
+
+    - name: Build backend
+      run: cd back && mvn package -DskipTests
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build and push Docker images
+      run: |
+        docker build -t walidzerrifi/frontend:latest ./front
+        docker build -t walidzerrifie/backend:latest ./back
+        docker push walidzerrifi/frontend:latest
+        docker push walidzerrifi/backend:latest
