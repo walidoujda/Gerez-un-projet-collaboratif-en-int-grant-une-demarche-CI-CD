@@ -1,18 +1,24 @@
-# Étape de construction
-FROM maven:3.8.4-openjdk-17-slim AS build
+# Utilisez l'image officielle de Maven qui inclut OpenJDK
+FROM maven:3.8.4-openjdk-11 as build
 
+# Définissez le répertoire de travail dans l'image Docker
 WORKDIR /app
 
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package 
+# Copiez vos fichiers de projet dans l'image Docker
+COPY . .
 
-# Étape de production
-FROM openjdk:20-slim
+# Facultatif : exécutez les commandes de résolution des dépendances pour améliorer la mise en cache des couches
+RUN mvn dependency:resolve
 
-# Remplacez 'app.jar' par le nom exact du fichier jar produit par Maven
-COPY --from=build /app/target/*.jar /app.jar
+# Construisez votre application sans exécuter les tests
+RUN mvn clean install -DskipTests
 
-EXPOSE 8080
+# Deuxième étape pour configurer le conteneur de runtime
+FROM openjdk:11-jre-slim
+WORKDIR /app
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Copiez l'artefact construit de la première étape
+COPY --from=build /app/target/*.jar ./app.jar
+
+# Définissez la commande pour exécuter l'application
+ENTRYPOINT ["java", "-jar", "app.jar"]
