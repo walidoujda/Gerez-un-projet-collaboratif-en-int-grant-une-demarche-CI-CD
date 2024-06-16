@@ -1,24 +1,29 @@
-# Utilisez l'image officielle de Maven qui inclut OpenJDK
-FROM maven:3.8.4-openjdk-11 as build
+# Étape de construction
+FROM openjdk:11 as build
 
-# Définissez le répertoire de travail dans l'image Docker
-WORKDIR /app
+# Installer Maven
+RUN apt-get update && apt-get install -y maven
 
-# Copiez vos fichiers de projet dans l'image Docker
-COPY . .
+# Copier uniquement le fichier pom.xml d'abord pour utiliser le cache Docker efficacement
+COPY pom.xml .
 
-# Facultatif : exécutez les commandes de résolution des dépendances pour améliorer la mise en cache des couches
-RUN mvn dependency:resolve
+# Télécharger les dépendances Maven pour les cacher (sauf si pom.xml change)
+RUN mvn dependency:go-offline
 
-# Construisez votre application sans exécuter les tests
+# Copier les sources seulement après les dépendances pour éviter de les re-télécharger si seul le code source change
+COPY src/ src/
+
+# Construire l'application sans exécuter les tests pour accélérer le build
 RUN mvn clean install -DskipTests
 
-# Deuxième étape pour configurer le conteneur de runtime
+# Étape de runtime
 FROM openjdk:11-jre-slim
-WORKDIR /app
 
-# Copiez l'artefact construit de la première étape
-COPY --from=build /app/target/*.jar ./app.jar
+# Définir le répertoire de travail
+WORKDIR /bobapp
 
-# Définissez la commande pour exécuter l'application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Copier l'artefact construit depuis l'étape de build
+COPY --from=build /target/*.jar bobapp.jar
+
+# Définir la commande pour exécuter l'application
+ENTRYPOINT ["java", "-jar", "bobapp.jar"]
