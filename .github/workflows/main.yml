@@ -41,7 +41,7 @@ jobs:
         path: back\target\site\jacoco
 
     - name: Install frontend dependencies
-      run: cd front && npm install
+      run: cd front && ng test --watch=false --browsers=ChromeHeadless
 
     - name: Run frontend tests
       run: cd front && npm test -- --ci
