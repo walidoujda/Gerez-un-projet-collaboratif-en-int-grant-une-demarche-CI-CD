@@ -1,16 +1,5 @@
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
@@ -26,7 +15,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'
+        node-version: '18'  # Mise à jour pour utiliser Node.js v18
+
+    - name: Install Angular CLI
+      run: npm install -g @angular/cli
 
     - name: Install backend dependencies
       run: cd back && mvn install
@@ -38,14 +30,13 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: jacoco-report
-        path: back\target\site\jacoco
-    - name: Install Angular CLI
-      run: npm install -g @angular/cli
+        path: back/target/site/jacoco
+
     - name: Install frontend dependencies
-      run: cd front && ng test --watch=false --browsers=ChromeHeadless
+      run: cd front && npm install
 
     - name: Run frontend tests
-      run: cd front && npm test -- --ci
+      run: cd front && ng test --watch=false --browsers=ChromeHeadless
 
     - name: Build frontend
       run: cd front && npm run build --prod
@@ -62,6 +53,6 @@ jobs:
     - name: Build and push Docker images
       run: |
         docker build -t walidzerrifi/frontend:latest ./front
-        docker build -t walidzerrifie/backend:latest ./back
+        docker build -t walidzerrifi/backend:latest ./back
         docker push walidzerrifi/frontend:latest
         docker push walidzerrifi/backend:latest
