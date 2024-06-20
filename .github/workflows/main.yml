@@ -39,7 +39,8 @@ jobs:
       with:
         name: jacoco-report
         path: back\target\site\jacoco
-
+    - name: Install Angular CLI
+      run: npm install -g @angular/cli
     - name: Install frontend dependencies
       run: cd front && ng test --watch=false --browsers=ChromeHeadless
 
