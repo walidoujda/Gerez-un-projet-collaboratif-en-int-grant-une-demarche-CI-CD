@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.getRandomJoke();
+    this.getRandomJoke() ;
   }
 
   public getRandomJoke(): void {
