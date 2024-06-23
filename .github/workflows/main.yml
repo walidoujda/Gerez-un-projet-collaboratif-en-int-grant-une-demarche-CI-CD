@@ -65,7 +65,11 @@ jobs:
         docker build -t walidzerrifi/backend:latest ./back
         docker push walidzerrifi/frontend:latest
         docker push walidzerrifi/backend:latest
-
+    - name: Install SonarQube Scanner
+      run: |
+        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-10.5.zip
+        unzip sonar-scanner-cli-10.5.zip
+        export PATH=$PATH:$(pwd)/sonar-scanner-10.5/bin
     - name: Analyze with SonarQube
       env:
         SONAR_TOKEN: squ_32bf67763326814b1799bdbae548f64546898a7c
