@@ -71,6 +71,10 @@ jobs:
         unzip sonar-scanner-cli-4.6.2.2472-linux.zip
         sudo mv sonar-scanner-4.6.2.2472-linux /opt/sonar-scanner
         echo "export PATH=$PATH:/opt/sonar-scanner/bin" >> $GITHUB_ENV
+        
+    - name: Clear Sonar Cache
+      run: rm -rf /home/runner/.sonar/cache/*
+
     - name: Analyze with SonarQube
       env:
         SONAR_TOKEN: squ_32bf67763326814b1799bdbae548f64546898a7c
