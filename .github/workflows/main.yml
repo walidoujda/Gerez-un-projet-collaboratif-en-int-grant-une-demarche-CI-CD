@@ -78,14 +78,14 @@ jobs:
       run: |
         # Backend analysis
         cd back
-        sonar-scanner \
+        /opt/sonar-scanner/bin/sonar-scanner \
           -Dsonar.projectKey=backend \
           -Dsonar.sources=./src \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
         # Frontend analysis
         cd ../front
-        sonar-scanner \
+        /opt/sonar-scanner/bin/sonar-scanner \
           -Dsonar.projectKey=frontend \
           -Dsonar.sources=./src \
           -Dsonar.host.url=$SONAR_HOST_URL \
