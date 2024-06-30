@@ -78,7 +78,7 @@ jobs:
     - name: Analyze with SonarQube
       env:
         SONAR_TOKEN: squ_32bf67763326814b1799bdbae548f64546898a7c
-        SONAR_HOST_URL: https://3152-196-89-201-111.ngrok-free.app
+        SONAR_HOST_URL:  https://0d38-2a02-8429-5e0d-8c01-3820-4ffb-e639-3574.ngrok-free.app
       run: |
         # Backend analysis
         cd back
