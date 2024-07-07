@@ -100,12 +100,5 @@ jobs:
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
           -Dsonar.java.binaries=target/classes
-        # Frontend analysis
-        cd ../front
-        /opt/sonar-scanner/bin/sonar-scanner \
-          -Dsonar.projectKey=frontend \
-          -Dsonar.sources=./src \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=$SONAR_TOKEN
-
+        
     
