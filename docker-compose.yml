@@ -46,8 +46,7 @@ services:
       - "4040:4040"
     environment:
       - NGROK_AUTHTOKEN=2helDNX3dVoGsgMUbfXljXP8vuz_JoJTo8y4yDf4sp4hqM3u
-    command: ngrok http front:80 --region=fr --log=stdout
-
+    command: ngrok http front:80 --region=auto --log=stdout 
 volumes:
   sonarqube_conf:
   sonarqube_data:
