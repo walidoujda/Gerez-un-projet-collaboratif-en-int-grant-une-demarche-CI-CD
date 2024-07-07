@@ -31,6 +31,9 @@ jobs:
 
     - name: Install backend dependencies
       run: cd back && mvn install
+     
+    - name: Compile backend
+      run: cd back && mvn compile
 
     - name: Run backend tests and generate coverage report
       run: cd back && mvn test jacoco:report
@@ -99,12 +102,6 @@ jobs:
           -Dsonar.sources=./src \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
-        # Frontend analysis
-        cd ../front
-        /opt/sonar-scanner/bin/sonar-scanner \
-          -Dsonar.projectKey=frontend \
-          -Dsonar.sources=./src \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=$SONAR_TOKEN
-
+          -Dsonar.java.binaries=target/classes
+        
     
