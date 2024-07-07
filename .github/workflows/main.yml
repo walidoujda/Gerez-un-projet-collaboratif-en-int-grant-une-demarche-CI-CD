@@ -65,6 +65,12 @@ jobs:
         docker build -t walidzerrifi/backend:latest ./back
         docker push walidzerrifi/frontend:latest
         docker push walidzerrifi/backend:latest
+
+    - name: Install Docker Compose
+      run: sudo apt-get install docker-compose
+
+    - name: Start services with Docker Compose
+      run: docker-compose up -d
     - name: Install SonarQube Scanner
       run: |
         wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
