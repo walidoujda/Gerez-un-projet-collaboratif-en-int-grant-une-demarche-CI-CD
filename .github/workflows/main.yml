@@ -31,6 +31,9 @@ jobs:
 
     - name: Install backend dependencies
       run: cd back && mvn install
+     
+    - name: Compile backend
+      run: cd back && mvn compile
 
     - name: Run backend tests and generate coverage report
       run: cd back && mvn test jacoco:report
