@@ -15,8 +15,6 @@
 	<description>L'application de joke par excellence !</description>
 	<properties>
 		<java.version>11</java.version>
-		<sonar.host.url>https://mysonarqube.loca.lt/</sonar.host.url>
-		<sonar.login>sqa_4ef6b3dbd278815808ce8b07e7e9f1bbf70e2463</sonar.login>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -36,10 +34,18 @@
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.9.0.2155</version>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<properties>
+						<property>
+							<name>sonar.host.url</name>
+							<value>https://mysonarqube.loca.lt/</value>
+						</property>
+						<property>
+							<name>sonar.login</name>
+							<value>sqa_4ef6b3dbd278815808ce8b07e7e9f1bbf70e2463</value>
+						</property>
+					</properties>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
