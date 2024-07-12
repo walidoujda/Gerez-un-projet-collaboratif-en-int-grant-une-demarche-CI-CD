@@ -1,4 +1,4 @@
-# Étape de construction
+# Étape de construction de l'application Angular
 FROM node:14 AS build
 
 WORKDIR /app
@@ -9,8 +9,10 @@ RUN npm install
 COPY . .
 RUN npm run build --prod
 
-# Étape de production
+# Étape de production avec Nginx
 FROM nginx:alpine
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=build /app/dist/bobapp /usr/share/nginx/html
 
