@@ -15,8 +15,8 @@
 	<description>L'application de joke par excellence !</description>
 	<properties>
 		<java.version>11</java.version>
-		<sonar.host.url>https://3152-196-89-201-111.ngrok-free.app</sonar.host.url>
-		<sonar.login>squ_32bf67763326814b1799bdbae548f64546898a7c</sonar.login>
+		<sonar.host.url>https://mysonarqube.loca.lt/</sonar.host.url>
+		<sonar.login>sqa_4ef6b3dbd278815808ce8b07e7e9f1bbf70e2463</sonar.login>
 	</properties>
 	<dependencies>
 		<dependency>
