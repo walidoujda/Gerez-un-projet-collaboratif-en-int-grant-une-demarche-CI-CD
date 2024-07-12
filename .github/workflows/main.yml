@@ -7,9 +7,10 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build:
-    runs-on: ubuntu-latest  # Utiliser Ubuntu au lieu de Windows
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -74,6 +75,7 @@ jobs:
 
     - name: Clear Sonar Cache
       run: rm -rf /home/runner/.sonar/cache/*
+
     - name: Install SonarQube Scanner
       run: |
         wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
@@ -83,14 +85,15 @@ jobs:
 
     - name: Analyze with SonarQube
       env:
-        SONAR_TOKEN: sqa_4ef6b3dbd278815808ce8b07e7e9f1bbf70e2463
-        SONAR_HOST_URL:  https://mysonarqube.loca.lt/
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: https://mysonarqube.loca.lt/
       run: |
         # Backend analysis
         cd back
         /opt/sonar-scanner/bin/sonar-scanner \
           -Dsonar.projectKey=backend \
           -Dsonar.sources=./src \
+          -Dsonar.java.binaries=target/classes \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
         # Frontend analysis
@@ -100,5 +103,3 @@ jobs:
           -Dsonar.sources=./src \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
-
-    
