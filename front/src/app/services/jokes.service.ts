@@ -13,7 +13,8 @@ export class JokesService {
   private subject: BehaviorSubject<Joke | null> = new BehaviorSubject<Joke | null>(null);
 
   constructor(private httpClient: HttpClient) {
-    this.getRandomJoke();
+    this.getRand
+    omJoke();
   }
 
   public getRandomJoke(): void {
