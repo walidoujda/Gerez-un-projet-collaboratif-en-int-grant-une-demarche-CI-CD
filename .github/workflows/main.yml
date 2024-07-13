@@ -108,5 +108,7 @@ jobs:
         /opt/sonar-scanner/bin/sonar-scanner \
           -Dsonar.projectKey=frontend \
           -Dsonar.sources=./src \
+          -Dsonar.javascript.jstest.reportsPath=coverage \
+          -Dsonar.junit.reportPaths=coverage/test-results.xml \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
