@@ -10,7 +10,7 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-	  require('karma-junit-reporter'),
+      require('karma-junit-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
@@ -29,23 +29,23 @@ module.exports = function (config) {
       dir: require('path').join(__dirname, './coverage/bobapp'),
       subdir: '.',
       reporters: [
-        { type: 'html' },
+        { type: 'xml' },
         { type: 'text-summary' },
-		{ type: 'lcov' }
+        { type: 'lcov' }
       ]
     },
-	junitReporter: {
+    junitReporter: {
       outputDir: require('path').join(__dirname, './coverage'), // results will be saved as $outputDir/$browserName.xml
       outputFile: 'test-results.xml', // if included, results will be saved as $outputDir/$browserName/$outputFile
       useBrowserName: false // add browser name to report and classes names
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml', 'junit'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['ChromeHeadless'],
-    singleRun: false,
+    singleRun: true, // Set to true for CI environments
     restartOnFileChange: true
   });
 };
