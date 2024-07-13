@@ -44,9 +44,12 @@ jobs:
 
     - name: Install frontend dependencies
       run: cd front && npm install
+      
     - name: Install npm install karma-junit-reporter 
       run: cd front && npm install karma-junit-reporter --save-dev
 
+    - name: Install npm karma-sonarqube-unit-reporter 
+      run: cd front && npm install karma-sonarqube-unit-reporter --save-dev
       
     - name: Run frontend tests
       run: cd front && ng test --watch=false --browsers=ChromeHeadless
