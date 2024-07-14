@@ -65,29 +65,42 @@ jobs:
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    
-       - name: Read version
+        
+    - name: Read version
       id: read_version
       run: |
         if [ ! -f VERSION ]; then
           echo "0" > VERSION
         fi
         VERSION=$(cat VERSION)
+        echo "VERSION=$VERSION"
         echo "CURRENT_VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Print current version
+    - name: Print current version for debugging
       run: echo "Current version is ${{ env.CURRENT_VERSION }}"
 
     - name: Increment version
       id: increment_version
       run: |
         CURRENT_VERSION=${{ env.CURRENT_VERSION }}
+        echo "Current version from env is $CURRENT_VERSION"
         NEW_VERSION=$((CURRENT_VERSION + 1))
+        echo "New version calculated is $NEW_VERSION"
         echo $NEW_VERSION > VERSION
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-    - name: Print new version
+    - name: Print new version for debugging
       run: echo "New version is ${{ env.NEW_VERSION }}"
+
+    - name: Build and push Docker images
+      run: |
+        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }} ./front
+        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }} ./back
+        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }}
+        docker push walidzerrifi/backend:${{ env.NEW_VERSION }}
+
+    - name: Verify new version
+      run: echo "The new version is ${{ env.NEW_VERSION }}"
 
     - name: Build and push Docker images
       run: |
