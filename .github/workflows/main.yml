@@ -78,16 +78,16 @@ jobs:
     - name: Increment version
       id: increment_version
       run: |
-        NEW_VERSION=$((env.CURRENT_VERSION + 1))
+        NEW_VERSION=$((CURRENT_VERSION + 1))
         echo $NEW_VERSION > VERSION
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-        
+
     - name: Build and push Docker images
       run: |
-        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }}  ./front
-        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }}  ./back
-        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }} 
-        docker push walidzerrifi/backend:${{ env.NEW_VERSION }} 
+        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }} ./front
+        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }} ./back
+        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }}
+        docker push walidzerrifi/backend:${{ env.NEW_VERSION }}
 
     - name: Install Docker Compose
       run: sudo apt-get install docker-compose
