@@ -112,3 +112,5 @@ jobs:
           -Dsonar.junit.reportPaths=coverage/test-results.xml \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
+
+          
