@@ -52,7 +52,7 @@ jobs:
       run: cd front && npm install karma-sonarqube-unit-reporter --save-dev
       
     - name: Run frontend tests
-      run: cd front && ng test --watch=false --browsers=ChromeHeadless
+      run: cd front && ng test --watch=false --browsers=ChromeHeadless --code-coverage=true
 
     - name: Build frontend
       run: cd front && npm run build --prod
