@@ -84,10 +84,10 @@ jobs:
         
     - name: Build and push Docker images
       run: |
-        docker build -t walidzerrifi/frontend:1.0 ./front
-        docker build -t walidzerrifi/backend:1.0 ./back
-        docker push walidzerrifi/frontend:1.0
-        docker push walidzerrifi/backend:1.0
+        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }}  ./front
+        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }}  ./back
+        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }} 
+        docker push walidzerrifi/backend:${{ env.NEW_VERSION }} 
 
     - name: Install Docker Compose
       run: sudo apt-get install docker-compose
