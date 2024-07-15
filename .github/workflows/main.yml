@@ -66,16 +66,38 @@ jobs:
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
+    - name: Read current Docker image version
+      id: read_docker_version
+      run: |
+        current_version=$(docker images | awk '$1 == "walidzerrifi/frontend" {print $2}' | sort -V | tail -n 1)
+        if [ -z "$current_version" ]; then
+          current_version="0.00"
+        fi
+        echo "Current Docker image version: $current_version"
+        echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
+
+    - name: Increment version
+      id: increment_version
+      run: |
+        current_version=${{ env.CURRENT_VERSION }}
+        new_version=$(awk "BEGIN {printf \"%.2f\", $current_version + 0.01}")
+        echo "New Docker image version: $new_version"
+        echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+
+    - name: Print new version for debugging
+      run: |
+        echo "New version from env is ${{ env.NEW_VERSION }}"
+
     - name: Build and push Docker images
       run: |
-        NEW_VERSION = $(docker images | awk '($1 == "walidzerrifi/frontend") {print $2 += .01; exit}')
-        docker build -t walidzerrifi/frontend:NEW_VERSION ./front
-        docker build -t walidzerrifi/backend:NEW_VERSION ./back
-        docker push walidzerrifi/frontend:NEW_VERSION
-        docker push walidzerrifi/backend:NEW_VERSION
+        new_version=${{ env.NEW_VERSION }}
+        docker build -t walidzerrifi/frontend:$new_version ./front
+        docker build -t walidzerrifi/backend:$new_version ./back
+        docker push walidzerrifi/frontend:$new_version
+        docker push walidzerrifi/backend:$new_version
 
     - name: Verify new version
-      run: echo "The new version is ${{ steps.increment_version.outputs.NEW_VERSION }}"
+      run: echo "The new version is ${{ env.NEW_VERSION }}"
 
     - name: Install Docker Compose
       run: sudo apt-get install docker-compose
