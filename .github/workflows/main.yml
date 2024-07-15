@@ -72,42 +72,45 @@ jobs:
         if [ ! -f VERSION ]; then
           echo "0" > VERSION
         fi
-        cat VERSION
         VERSION=$(cat VERSION)
         echo "VERSION=$VERSION"
         echo "CURRENT_VERSION=$VERSION" >> $GITHUB_ENV
+        echo "::set-output name=CURRENT_VERSION::$VERSION"
 
     - name: Print current version for debugging
       run: |
         echo "Content of VERSION file:"
         cat VERSION
         echo "Current version from env is ${{ env.CURRENT_VERSION }}"
+        echo "Current version from step output is ${{ steps.read_version.outputs.CURRENT_VERSION }}"
 
     - name: Increment version
       id: increment_version
       run: |
-        CURRENT_VERSION=${{ env.CURRENT_VERSION }}
+        CURRENT_VERSION=${{ steps.read_version.outputs.CURRENT_VERSION }}
         echo "Current version from env is $CURRENT_VERSION"
         NEW_VERSION=$((CURRENT_VERSION + 1))
         echo "New version calculated is $NEW_VERSION"
         echo $NEW_VERSION > VERSION
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        echo "::set-output name=NEW_VERSION::$NEW_VERSION"
 
     - name: Print new version for debugging
       run: |
         echo "New version from env is ${{ env.NEW_VERSION }}"
+        echo "New version from step output is ${{ steps.increment_version.outputs.NEW_VERSION }}"
         echo "Content of VERSION file after increment:"
         cat VERSION
 
     - name: Build and push Docker images
       run: |
-        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }} ./front
-        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }} ./back
-        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }}
-        docker push walidzerrifi/backend:${{ env.NEW_VERSION }}
+        docker build -t walidzerrifi/frontend:${{ steps.increment_version.outputs.NEW_VERSION }} ./front
+        docker build -t walidzerrifi/backend:${{ steps.increment_version.outputs.NEW_VERSION }} ./back
+        docker push walidzerrifi/frontend:${{ steps.increment_version.outputs.NEW_VERSION }}
+        docker push walidzerrifi/backend:${{ steps.increment_version.outputs.NEW_VERSION }}
 
     - name: Verify new version
-      run: echo "The new version is ${{ env.NEW_VERSION }}"
+      run: echo "The new version is ${{ steps.increment_version.outputs.NEW_VERSION }}"
 
     - name: Install Docker Compose
       run: sudo apt-get install docker-compose
@@ -136,16 +139,3 @@ jobs:
         /opt/sonar-scanner/bin/sonar-scanner \
           -Dsonar.projectKey=backend \
           -Dsonar.sources=./src \
-          -Dsonar.java.binaries=target/classes \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=$SONAR_TOKEN
-          
-        # Frontend analysis
-        cd ../front
-        /opt/sonar-scanner/bin/sonar-scanner \
-          -Dsonar.projectKey=frontend \
-          -Dsonar.sources=./src \
-          -Dsonar.javascript.jstest.reportsPath=coverage \
-          -Dsonar.junit.reportPaths=coverage/test-results.xml \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=$SONAR_TOKEN
