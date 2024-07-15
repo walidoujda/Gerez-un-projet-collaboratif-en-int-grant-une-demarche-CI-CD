@@ -89,17 +89,3 @@ jobs:
 
     - name: Print new version for debugging
       run: echo "New version from env ${{ env.NEW_VERSION }}"
-
-    - name: Build and push Docker images
-      run: |
-        new_version=${{ env.NEW_VERSION }}
-        docker build -t walidzerrifi/frontend:$new_version ./front
-        docker build -t walidzerrifi/backend:$new_version ./back
-        docker push walidzerrifi/frontend:$new_version
-        docker push walidzerrifi/backend:$new_version
-
-    - name: Install Docker Compose
-      run: sudo apt-get install docker-compose
-
-    - name: Start services with Docker Compose
-      run: docker-compose up -d
