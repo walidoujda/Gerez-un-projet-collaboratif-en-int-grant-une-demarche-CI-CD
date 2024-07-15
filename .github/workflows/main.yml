@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Utiliser Ubuntu au lieu de Windows
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -45,6 +45,15 @@ jobs:
     - name: Install frontend dependencies
       run: cd front && npm install
       
+    - name: Install npm install karma-junit-reporter 
+      run: cd front && npm install karma-junit-reporter --save-dev
+
+    - name: Install npm karma-sonarqube-unit-reporter 
+      run: cd front && npm install karma-sonarqube-unit-reporter --save-dev
+      
+    - name: Run frontend tests
+      run: cd front && ng test --watch=false --browsers=ChromeHeadless --code-coverage=true
+
     - name: Build frontend
       run: cd front && npm run build --prod
 
@@ -56,47 +65,73 @@ jobs:
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    
-    - name: List all Docker images
-      run: docker images
-
     - name: Pull existing Docker image tags
       run: |
         docker pull walidzerrifi/backend:0.0.1 || true
         docker pull walidzerrifi/backend:0.01 || true
         docker pull walidzerrifi/frontend:0.0.1 || true
         docker pull walidzerrifi/frontend:0.01 || true
-    - name: List all Docker images
-      run: docker images
-    - name: Debug Docker images
-      run: docker images walidzerrifi/frontend --format "{{.Repository}}:{{.Tag}}"
-
-    - name: Read current Docker image version
-      id: read_docker_version
+    - name: Read version
+      id: read_version
       run: |
-        current_version=$(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1)
-        if [ -z "$current_version" ]; then
-          echo "No existing Docker image found for walidzerrifi/frontend. Starting with version 0.0.0."
-          current_version="0.0.0"
+        if [ ! -f VERSION ]; then
+          echo "0" > VERSION
         fi
-        echo "Current Docker image version: $current_version"
-        echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
-
-    - name: Print current version for debugging
-      run: echo "Current version from env ${{ env.CURRENT_VERSION }}"
+        VERSION=$(cat VERSION)
+        echo "CURRENT_VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Increment version
       id: increment_version
       run: |
-        current_version=${{ env.CURRENT_VERSION }}
-        IFS='.' read -r -a version_parts <<< "$current_version"
-        major=${version_parts[0]}
-        minor=${version_parts[1]}
-        patch=${version_parts[2]}
-        patch=$((patch + 1))
-        new_version="$major.$minor.$patch"
-        echo "New Docker image version: $new_version"
-        echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+        NEW_VERSION=$((CURRENT_VERSION + 1))
+        echo $NEW_VERSION > VERSION
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        
+    - name: Build and push Docker images
+      run: |
+        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }}  ./front
+        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }}  ./back
+        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }} 
+        docker push walidzerrifi/backend:${{ env.NEW_VERSION }} 
 
-    - name: Print new version for debugging
-      run: echo "New version from env ${{ env.NEW_VERSION }}"
+    - name: Install Docker Compose
+      run: sudo apt-get install docker-compose
+
+    - name: Start services with Docker Compose
+      run: docker-compose up -d
+
+    - name: Clear Sonar Cache
+      run: rm -rf /home/runner/.sonar/cache/*
+
+    - name: Install SonarQube Scanner
+      run: |
+        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+        unzip sonar-scanner-cli-4.6.2.2472-linux.zip
+        sudo mv sonar-scanner-4.6.2.2472-linux /opt/sonar-scanner
+        echo "export PATH=$PATH:/opt/sonar-scanner/bin" >> $GITHUB_ENV
+
+    - name: Analyze with SonarQube
+      env:
+        SONAR_TOKEN: sqa_4ef6b3dbd278815808ce8b07e7e9f1bbf70e2463
+        SONAR_HOST_URL: https://mysonarqube.loca.lt/
+      run: |
+        # Backend analysis
+        cd back
+        /opt/sonar-scanner/bin/sonar-scanner \
+          -Dsonar.projectKey=backend \
+          -Dsonar.sources=./src \
+          -Dsonar.java.binaries=target/classes \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN
+          
+        # Frontend analysis
+        cd ../front
+        /opt/sonar-scanner/bin/sonar-scanner \
+          -Dsonar.projectKey=frontend \
+          -Dsonar.sources=./src \
+          -Dsonar.javascript.jstest.reportsPath=coverage \
+          -Dsonar.junit.reportPaths=coverage/test-results.xml \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN
+
+          
