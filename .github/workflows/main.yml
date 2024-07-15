@@ -75,8 +75,8 @@ jobs:
         echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
 
     - name: Print current version for debugging
-      run: echo "Current version from env: ${{ env.CURRENT_VERSION }}"
-
+      run: echo Current version from env ${{ env.CURRENT_VERSION }}
+      
     - name: Increment version
       id: increment_version
       run: |
