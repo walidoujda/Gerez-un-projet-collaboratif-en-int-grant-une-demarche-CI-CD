@@ -105,10 +105,10 @@ jobs:
       run: echo "New version from env ${{ env.NEW_VERSION }}" 
     - name: Build and push Docker images
       run: |
-        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }}  ./front
-        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }}  ./back
-        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }} 
-        docker push walidzerrifi/backend:${{ env.NEW_VERSION }} 
+        docker build -t walidzerrifi/frontend:%Y-%m-%d %H:%M:%S  ./front
+        docker build -t walidzerrifi/backend:%Y-%m-%d %H:%M:%S ./back
+        docker push walidzerrifi/frontend:%Y-%m-%d %H:%M:%S
+        docker push walidzerrifi/backend:%Y-%m-%d %H:%M:%S
 
     - name: Install Docker Compose
       run: sudo apt-get install docker-compose
