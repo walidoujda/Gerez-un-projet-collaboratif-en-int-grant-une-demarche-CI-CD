@@ -70,10 +70,11 @@ jobs:
 
     - name: Pull all existing Docker image tags
       run: |
-        tags=$(curl -s https://registry.hub.docker.com/v1/repositories/walidzerrifi/frontend/tags | jq -r '.[].name')
+        tags=$(curl -s https://hub.docker.com/v2/repositories/walidzerrifi/frontend/tags?page_size=100 | jq -r '.results[].name')
         for tag in $tags; do
           docker pull walidzerrifi/frontend:$tag || true
         done
+
 
     - name: List all Docker images
       run: docker images
