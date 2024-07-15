@@ -44,13 +44,13 @@ jobs:
 
     - name: Install frontend dependencies
       run: cd front && npm install
-      
-    - name: Install karma-junit-reporter 
+
+    - name: Install karma-junit-reporter
       run: cd front && npm install karma-junit-reporter --save-dev
 
-    - name: Install karma-sonarqube-unit-reporter 
+    - name: Install karma-sonarqube-unit-reporter
       run: cd front && npm install karma-sonarqube-unit-reporter --save-dev
-      
+
     - name: Run frontend tests
       run: cd front && ng test --watch=false --browsers=ChromeHeadless --code-coverage=true
 
@@ -69,25 +69,16 @@ jobs:
     - name: Read current Docker image version
       id: read_docker_version
       run: |
-        echo $(docker images)
-        echo docker images ***/frontend --format "{{.Tag}}"
-        
-        echo $(docker images walidzerrifi/frontend --format "{{.Tag}}")
-        echo docker images ***/frontend --format "{{.Tag}}" | sort -V
-        echo $(docker images ***/frontend --format "{{.Tag}}" | sort -V)
-        echo docker images ***/frontend --format "{{.Tag}}" | sort -V | tail -n 1
-        echo $(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1)
         current_version=$(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1)
-        echo "Current Docker image versio=====>: $current_version"
         if [ -z "$current_version" ]; then
+          echo "No existing Docker image found for walidzerrifi/frontend. Starting with version 0.00."
           current_version="0.00"
         fi
         echo "Current Docker image version: $current_version"
         echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
 
     - name: Print current version for debugging
-      run: |
-        echo "Current version from env: ${{ env.CURRENT_VERSION }}"
+      run: echo "Current version from env: ${{ env.CURRENT_VERSION }}"
 
     - name: Increment version
       id: increment_version
@@ -98,8 +89,7 @@ jobs:
         echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
 
     - name: Print new version for debugging
-      run: |
-        echo "New version from env: ${{ env.NEW_VERSION }}"
+      run: echo "New version from env: ${{ env.NEW_VERSION }}"
 
     - name: Build and push Docker images
       run: |
