@@ -123,7 +123,6 @@ jobs:
           -Dsonar.java.binaries=target/classes \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
-          
         # Frontend analysis
         cd ../front
         /opt/sonar-scanner/bin/sonar-scanner \
