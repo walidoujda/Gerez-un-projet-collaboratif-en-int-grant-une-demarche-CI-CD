@@ -75,7 +75,6 @@ jobs:
           docker pull walidzerrifi/frontend:$tag || true
         done
 
-
     - name: List all Docker images
       run: docker images
 
@@ -84,8 +83,8 @@ jobs:
       run: |
         current_version=$(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1)
         if [ -z "$current_version" ]; then
-          echo "No existing Docker image found for walidzerrifi/frontend. Starting with version 0.0.0."
-          current_version="0.0.0"
+          echo "No existing Docker image found for walidzerrifi/frontend. Starting with version 1"
+          current_version=1
         fi
         echo "Current Docker image version: $current_version"
         echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
@@ -98,11 +97,7 @@ jobs:
       run: |
         current_version=${{ env.CURRENT_VERSION }}
         IFS='.' read -r -a version_parts <<< "$current_version"
-        major=${version_parts[0]}
-        minor=${version_parts[1]}
-        patch=${version_parts[2]}
-        patch=$((patch + 1))
-        new_version="$major.$minor.$patch"
+        new_version=current_version + 1
         echo "New Docker image version: $new_version"
         echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
 
