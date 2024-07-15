@@ -68,10 +68,10 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        docker build -t walidzerrifi/frontend::$(docker images | awk '($1 == "your/project") {print $2 += .01; exit}') ./front
-        docker build -t walidzerrifi/backend::$(docker images | awk '($1 == "your/project") {print $2 += .01; exit}') ./back
-        docker push walidzerrifi/frontend::$(docker images | awk '($1 == "your/project") {print $2 += .01; exit}')
-        docker push walidzerrifi/backend::$(docker images | awk '($1 == "your/project") {print $2 += .01; exit}')
+        docker build -t walidzerrifi/frontend::$(docker images | awk '($1 == "walidzerrifi/frontend") {print $2 += .01; exit}') ./front
+        docker build -t walidzerrifi/backend::$(docker images | awk '($1 == "walidzerrifi/backend") {print $2 += .01; exit}') ./back
+        docker push walidzerrifi/frontend::$(docker images | awk '($1 == "walidzerrifi/frontend") {print $2 += .01; exit}')
+        docker push walidzerrifi/backend::$(docker images | awk '($1 == "walidzerrifi/backend") {print $2 += .01; exit}')
 
     - name: Verify new version
       run: echo "The new version is ${{ steps.increment_version.outputs.NEW_VERSION }}"
