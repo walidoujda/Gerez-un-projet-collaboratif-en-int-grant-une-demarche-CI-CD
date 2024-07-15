@@ -70,8 +70,11 @@ jobs:
       id: read_docker_version
       run: |
         echo docker images ***/frontend --format "{{.Tag}}"
+        echo $(docker images ***/frontend --format "{{.Tag}}")
         echo docker images ***/frontend --format "{{.Tag}}" | sort -V
-        echo docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1
+        echo $(docker images ***/frontend --format "{{.Tag}}" | sort -V)
+        echo docker images ***/frontend --format "{{.Tag}}" | sort -V | tail -n 1
+        echo $(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1)
         current_version=$(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1)
         echo "Current Docker image versio=====>: $current_version"
         if [ -z "$current_version" ]; then
