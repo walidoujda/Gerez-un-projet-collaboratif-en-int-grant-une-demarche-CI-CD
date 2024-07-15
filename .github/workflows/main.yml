@@ -65,16 +65,16 @@ jobs:
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-    - name: Pull existing Docker image tags
+   
+    - name: Pull all existing Docker image tags
       run: |
-        docker pull walidzerrifi/backend:latest || true
-        docker pull walidzerrifi/frontend:latest || true
-        
+        for tag in $(curl -s https://registry.hub.docker.com/v1/repositories/walidzerrifi/frontend/tags | jq -r '.[].name'); do
+          docker pull walidzerrifi/frontend:$tag || true
+        done
+
     - name: List all Docker images
       run: docker images
-      
-    - name: Debug Docker images
-      run: docker images walidzerrifi/frontend --format "{{.Repository}}:{{.Tag}}"
+
     - name: Read current Docker image version
       id: read_docker_version
       run: |
@@ -85,8 +85,10 @@ jobs:
         fi
         echo "Current Docker image version: $current_version"
         echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
+
     - name: Print current version for debugging
-      run: echo "Current version from env ${{ env.CURRENT_VERSION }}"
+      run: echo "Current version from env: ${{ env.CURRENT_VERSION }}"
+
     - name: Increment version
       id: increment_version
       run: |
@@ -99,14 +101,18 @@ jobs:
         new_version="$major.$minor.$patch"
         echo "New Docker image version: $new_version"
         echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+
     - name: Print new version for debugging
-      run: echo "New version from env ${{ env.NEW_VERSION }}" 
+      run: echo "New version from env: ${{ env.NEW_VERSION }}"
+
     - name: Build and push Docker images
       run: |
-        docker build -t walidzerrifi/frontend:%Y-%m-%d %H:%M:%S  ./front
-        docker build -t walidzerrifi/backend:%Y-%m-%d %H:%M:%S ./back
-        docker push walidzerrifi/frontend:%Y-%m-%d %H:%M:%S
-        docker push walidzerrifi/backend:%Y-%m-%d %H:%M:%S
+        new_version=${{ env.NEW_VERSION }}
+        docker build -t walidzerrifi/frontend:$new_version ./front
+        docker build -t walidzerrifi/backend:$new_version ./back
+        docker push walidzerrifi/frontend:$new_version
+        docker push walidzerrifi/backend:$new_version
+
 
     - name: Install Docker Compose
       run: sudo apt-get install docker-compose
