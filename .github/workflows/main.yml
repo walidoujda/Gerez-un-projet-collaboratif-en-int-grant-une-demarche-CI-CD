@@ -71,8 +71,6 @@ jobs:
         docker pull walidzerrifi/backend:0.01 || true
         docker pull walidzerrifi/frontend:0.0.1 || true
         docker pull walidzerrifi/frontend:0.01 || true
-    - name: Read version
-      id: read_version
     
     - name: List all Docker images
       run: docker images
