@@ -45,10 +45,10 @@ jobs:
     - name: Install frontend dependencies
       run: cd front && npm install
       
-    - name: Install npm install karma-junit-reporter 
+    - name: Install karma-junit-reporter 
       run: cd front && npm install karma-junit-reporter --save-dev
 
-    - name: Install npm karma-sonarqube-unit-reporter 
+    - name: Install karma-sonarqube-unit-reporter 
       run: cd front && npm install karma-sonarqube-unit-reporter --save-dev
       
     - name: Run frontend tests
@@ -102,13 +102,6 @@ jobs:
     - name: Verify new version
       run: echo "The new version is ${{ env.NEW_VERSION }}"
 
-    - name: Build and push Docker images
-      run: |
-        docker build -t walidzerrifi/frontend:${{ env.NEW_VERSION }} ./front
-        docker build -t walidzerrifi/backend:${{ env.NEW_VERSION }} ./back
-        docker push walidzerrifi/frontend:${{ env.NEW_VERSION }}
-        docker push walidzerrifi/backend:${{ env.NEW_VERSION }}
-
     - name: Install Docker Compose
       run: sudo apt-get install docker-compose
 
@@ -123,7 +116,8 @@ jobs:
         wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
         unzip sonar-scanner-cli-4.6.2.2472-linux.zip
         sudo mv sonar-scanner-4.6.2.2472-linux /opt/sonar-scanner
-        echo "export PATH=$PATH:/opt/sonar-scanner/bin" >> $GITHUB_ENV
+        echo "export PATH=\$PATH:/opt/sonar-scanner/bin" >> $GITHUB_ENV
+        source $GITHUB_ENV
 
     - name: Analyze with SonarQube
       env:
@@ -148,5 +142,3 @@ jobs:
           -Dsonar.junit.reportPaths=coverage/test-results.xml \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN
-
-          
