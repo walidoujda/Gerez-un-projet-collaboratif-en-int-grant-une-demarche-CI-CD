@@ -67,11 +67,9 @@ jobs:
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
     - name: Pull existing Docker image tags
       run: |
-        docker pull walidzerrifi/backend:0.0.1 || true
-        docker pull walidzerrifi/backend:0.01 || true
-        docker pull walidzerrifi/frontend:0.0.1 || true
-        docker pull walidzerrifi/frontend:0.01 || true
-    
+        docker pull walidzerrifi/backend:latest || true
+        docker pull walidzerrifi/frontend:latest || true
+        
     - name: List all Docker images
       run: docker images
       
