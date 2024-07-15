@@ -69,7 +69,7 @@ jobs:
     - name: Read current Docker image version
       id: read_docker_version
       run: |
-        current_version=$(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | tail -n 1)
+        current_version=$(docker images walidzerrifi/frontend --format "{{.Tag}}" | sort -V | Select-Object -Last 1)
         if [ -z "$current_version" ]; then
           current_version="0.00"
         fi
